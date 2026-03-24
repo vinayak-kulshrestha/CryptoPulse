@@ -1,4 +1,4 @@
-CryptoPulse – Real-Time Crypto Intelligence Dashboard
+# CryptoPulse – Real-Time Crypto Intelligence Dashboard
 
 1) Description:- 
 CryptoPulse is a web application that provides real-time insights into cryptocurrency markets. It allows users to explore various cryptocurrencies, view their current prices, market capitalization, and 24-hour price changes.
