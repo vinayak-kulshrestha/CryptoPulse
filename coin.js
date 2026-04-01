@@ -47,10 +47,9 @@ async function fetchCoinDetails() {
     const contentEl = document.getElementById('coin-content');
 
     try {
-        const response = await fetch(`https://api.coinlore.net/api/ticker/?id=${coinId}`);
+        const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`);
         if (!response.ok) throw new Error('API Error');
-        const json = await response.json();
-        const data = json[0];
+        const data = await response.json();
         
         if (!data) throw new Error('Coin not found');
 
@@ -71,30 +70,32 @@ async function fetchCoinDetails() {
 }
 
 function populateData(data) {
-    const imageSrc = `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/32/icon/${data.symbol.toLowerCase()}.png`;
+    const imageSrc = data.image ? data.image.large || data.image.small : '';
     const fallbackImage = `https://ui-avatars.com/api/?name=${data.symbol}&background=181a20&color=EAECEF&rounded=true`;
     
-    document.getElementById('coin-image').src = imageSrc;
+    document.getElementById('coin-image').src = imageSrc || fallbackImage;
     document.getElementById('coin-image').onerror = function() {
         this.src = fallbackImage;
     };
     
     document.getElementById('coin-name').textContent = data.name;
     document.getElementById('about-coin-name').textContent = data.name;
-    document.getElementById('coin-symbol').textContent = data.symbol;
+    document.getElementById('coin-symbol').textContent = data.symbol ? data.symbol.toUpperCase() : '';
     
-    document.getElementById('coin-price').textContent = formatCurrency(data.price_usd);
+    document.getElementById('coin-price').textContent = formatCurrency(data.market_data.current_price.usd);
     
-    const change = Number(data.percent_change_24h);
+    const change = Number(data.market_data.price_change_percentage_24h);
     const changeEl = document.getElementById('coin-change');
     changeEl.textContent = (change > 0 ? '+' : '') + formatPercentage(change);
     changeEl.className = 'change-badge ' + (change >= 0 ? 'change-up' : 'change-down');
 
-    document.getElementById('market-cap').textContent = formatCompactCurrency(data.market_cap_usd);
-    document.getElementById('total-volume').textContent = formatCompactCurrency(data.volume24);
-    document.getElementById('circulating-supply').textContent = formatCompactNumber(data.csupply) + ' ' + data.symbol;
-    document.getElementById('ath').textContent = 'N/A';
-    document.getElementById('coin-desc').textContent = `${data.name} is a cryptocurrency token. Stay updated with the latest market trends by checking the price charts.`;
+    document.getElementById('market-cap').textContent = formatCompactCurrency(data.market_data.market_cap.usd);
+    document.getElementById('total-volume').textContent = formatCompactCurrency(data.market_data.total_volume.usd);
+    document.getElementById('circulating-supply').textContent = formatCompactNumber(data.market_data.circulating_supply) + ' ' + (data.symbol ? data.symbol.toUpperCase() : '');
+    document.getElementById('ath').textContent = formatCurrency(data.market_data.ath.usd);
+    
+    const descText = data.description && data.description.en ? data.description.en.split('. ')[0] + '.' : `${data.name} is a cryptocurrency token. Stay updated with the latest market trends by checking the price charts.`;
+    document.getElementById('coin-desc').innerHTML = descText;
 }
 
 async function fetchChartData(symbol) {
