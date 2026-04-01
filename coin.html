@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Details - Crypto Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:8px;">
+                    <span class="logo-icon">🔸</span>
+                    <span class="logo-text">CryptoDash</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Markets</a>
+                <a href="#" class="active">Coin Details</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <a href="index.html" class="back-link">← Back to Markets</a>
+        <div id="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading coin details...</p>
+        </div>
+        
+        <div id="error" class="error-state hidden">
+            <p>Failed to load coin data. Please return to markets.</p>
+        </div>
+
+        <section id="coin-content" class="coin-details-section hidden">
+            <div class="coin-header">
+                <div class="coin-title-group">
+                    <img id="coin-image" src="" alt="Coin Logo" class="coin-logo-large">
+                    <div class="coin-title-info">
+                        <h1 id="coin-name">--</h1>
+                        <span id="coin-symbol" class="badge">--</span>
+                    </div>
+                </div>
+                <div class="coin-price-group">
+                    <h2 id="coin-price">$--</h2>
+                    <span id="coin-change" class="change-badge">--%</span>
+                </div>
+            </div>
+
+            <div class="coin-stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Market Cap</span>
+                    <span id="market-cap" class="stat-value">$--</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">24h Volume</span>
+                    <span id="total-volume" class="stat-value">$--</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Circulating Supply</span>
+                    <span id="circulating-supply" class="stat-value">--</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">All Time High</span>
+                    <span id="ath" class="stat-value">$--</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+
+            <div class="coin-description">
+                <h3>About <span id="about-coin-name">Coin</span></h3>
+                <p id="coin-desc">No description available.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="coin.js"></script>
+</body>
+</html>

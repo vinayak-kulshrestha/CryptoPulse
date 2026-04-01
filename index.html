@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Dashboard - Markets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🔸</span>
+                <span class="logo-text">CryptoPulse</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Markets</a>
+                <a href="#">Trade</a>
+                <a href="#">Earn</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="page-header">
+            <h1>Markets Overview</h1>
+            <p>Get a comprehensive snapshot of all cryptocurrencies available. This page displays the latest prices, 24-hour trading volume, price changes, and market capitalizations.</p>
+        </header>
+
+        <section class="markets-section">
+            <div class="table-container">
+                <table class="markets-table">
+                    <thead>
+                        <tr>
+                            <th class="col-name">Name</th>
+                            <th class="col-price">Price</th>
+                            <th class="col-change">24h Change</th>
+                            <th class="col-volume hide-mobile">24h Volume</th>
+                            <th class="col-marketcap hide-mobile hide-tablet">Market Cap</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crypto-table-body">
+                        <!-- Content will be injected by JS -->
+                    </tbody>
+                </table>
+                <div id="loading" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading market data...</p>
+                </div>
+                <div id="error" class="error-state hidden">
+                    <p>Failed to load market data. Please try again later.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
