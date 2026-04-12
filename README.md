@@ -4,9 +4,9 @@
 CryptoPulse is a web application that provides real-time insights into cryptocurrency markets. It allows users to explore various cryptocurrencies, view their current prices, market capitalization, and 24-hour price changes.
 
 2) API Used:- 
-This project uses the CoinGecko API, a free and public cryptocurrency data API.
+This project uses the CoinLore API, a free and public cryptocurrency data API.
 Endpoint used:
-https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd
+https://api.coinlore.net/api/tickers/
 
 3) The API provides:
   • Cryptocurrency names

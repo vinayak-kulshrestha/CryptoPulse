@@ -11,6 +11,15 @@
     --font-family: 'Inter', sans-serif;
 }
 
+body.light-mode {
+    --bg-main: #f5f5f5;
+    --bg-card: #ffffff;
+    --bg-hover: #e0e0e0;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --border-color: #cccccc;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -296,14 +305,6 @@ body {
 .stat-value {
     font-size: 1.25rem;
     font-weight: 600;
-}
-
-.chart-container {
-    background-color: var(--bg-card);
-    padding: 24px;
-    border-radius: 8px;
-    margin-bottom: 32px;
-    height: 400px;
 }
 
 .coin-description {

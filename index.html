@@ -23,10 +23,23 @@
     </nav>
 
     <main class="container">
-        <header class="page-header">
-            <h1>Markets Overview</h1>
-            <p>Get a comprehensive snapshot of all cryptocurrencies available. This page displays the latest prices, 24-hour trading volume, price changes, and market capitalizations.</p>
+        <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1>Markets Overview</h1>
+                <p>Get a comprehensive snapshot of all cryptocurrencies available. This page displays the latest prices, 24-hour trading volume, price changes, and market capitalizations.</p>
+            </div>
+            <button id="theme-toggle" style="padding: 8px 16px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 4px; cursor: pointer;">Toggle Light/Dark</button>
         </header>
+
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="search-input" placeholder="Search by name or symbol..." style="padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-card); color: var(--text-primary); flex-grow: 1; max-width: 300px;">
+            <select id="sort-select" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-card); color: var(--text-primary);">
+                <option value="market_cap_desc">Sort: Market Cap (High to Low)</option>
+                <option value="price_desc">Sort: Price (High to Low)</option>
+                <option value="price_asc">Sort: Price (Low to High)</option>
+                <option value="name_asc">Sort: Name (A-Z)</option>
+            </select>
+        </div>
 
         <section class="markets-section">
             <div class="table-container">

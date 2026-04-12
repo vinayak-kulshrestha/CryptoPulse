@@ -1,24 +1,27 @@
-const apiUrl = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false';
+const apiUrl = 'https://api.coinlore.net/api/tickers/';
 
+let allCoins = [];
 
-// Formatting utilities
 const formatCurrency = (value) => {
     const num = Number(value);
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: num < 1 ? 4 : 2,
-        maximumFractionDigits: num < 1 ? 4 : 2,
-    }).format(num);
+    if (num < 1) {
+        return '$' + num.toFixed(4);
+    }
+    return '$' + num.toFixed(2);
 };
 
 const formatCompactCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        notation: 'compact',
-        maximumFractionDigits: 2
-    }).format(Number(value));
+    const num = Number(value);
+    if (num >= 1000000000) {
+        return '$' + (num / 1000000000).toFixed(2) + 'B';
+    }
+    if (num >= 1000000) {
+        return '$' + (num / 1000000).toFixed(2) + 'M';
+    }
+    if (num >= 1000) {
+        return '$' + (num / 1000).toFixed(2) + 'K';
+    }
+    return '$' + num.toFixed(2);
 };
 
 const formatPercentage = (value) => {
@@ -28,11 +31,45 @@ const formatPercentage = (value) => {
 
 // Main execution logic
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    setupEventListeners();
     fetchMarketData();
 });
 
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+    }
+}
+
+function setupEventListeners() {
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+    const themeBtn = document.getElementById('theme-toggle');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            renderTable();
+        });
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            renderTable();
+        });
+    }
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+    }
+}
+
 async function fetchMarketData() {
-    const tableBody = document.getElementById('crypto-table-body');
     const loadingEl = document.getElementById('loading');
     const errorEl = document.getElementById('error');
 
@@ -41,13 +78,14 @@ async function fetchMarketData() {
         if (!response.ok) {
             throw new Error('Network response was not ok. Status: ' + response.status);
         }
-        const data = await response.json();
+        const responseData = await response.json();
         
-        // Hide loading
+        // Coinlore wraps the array in a "data" property
+        allCoins = responseData.data || responseData;
+        
         loadingEl.classList.add('hidden');
         
-        // Render rows
-        renderTable(data, tableBody);
+        renderTable();
 
     } catch (error) {
         console.error("Failed to fetch market data:", error);
@@ -56,35 +94,62 @@ async function fetchMarketData() {
     }
 }
 
-function renderTable(coins, tableBody) {
-    tableBody.innerHTML = ''; // clear table
+function renderTable() {
+    const tableBody = document.getElementById('crypto-table-body');
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
     
-    coins.forEach(coin => {
-        const tr = document.createElement('tr');
-        tr.onclick = () => {
-            window.location.href = `coin.html?id=${coin.id}&symbol=${coin.symbol}`;
-        };
+    let filteredCoins = allCoins;
 
-        const change = Number(coin.price_change_percentage_24h);
+    if (searchInput && searchInput.value) {
+        const searchTerm = searchInput.value.toLowerCase();
+        filteredCoins = allCoins.filter(coin => 
+            coin.name.toLowerCase().includes(searchTerm) || 
+            coin.symbol.toLowerCase().includes(searchTerm)
+        );
+    }
+
+    if (sortSelect) {
+        const sortMode = sortSelect.value;
+        filteredCoins.sort((a, b) => {
+            if (sortMode === 'market_cap_desc') {
+                return Number(b.market_cap_usd) - Number(a.market_cap_usd);
+            } else if (sortMode === 'price_desc') {
+                return Number(b.price_usd) - Number(a.price_usd);
+            } else if (sortMode === 'price_asc') {
+                return Number(a.price_usd) - Number(b.price_usd);
+            } else if (sortMode === 'name_asc') {
+                return a.name.localeCompare(b.name);
+            }
+            return 0;
+        });
+    }
+    
+    const htmlRows = filteredCoins.map(coin => {
+        const change = Number(coin.percent_change_24h);
         const changeClass = change >= 0 ? 'change-up' : 'change-down';
         const changePrefix = change > 0 ? '+' : '';
-        const imageSrc = coin.image;
+        const fallbackImg = `https://ui-avatars.com/api/?name=${coin.symbol}&background=181a20&color=EAECEF&rounded=true`;
 
-        tr.innerHTML = `
-            <td class="col-name">
-                <div class="coin-info">
-                    <img src="${imageSrc}" alt="${coin.name}" class="coin-icon" onerror="this.src='https://ui-avatars.com/api/?name=${coin.symbol}&background=181a20&color=EAECEF&rounded=true'">
-                    <div class="coin-name-group">
-                        <span class="coin-symbol">${coin.symbol.toUpperCase()}</span>
-                        <span class="coin-full-name">${coin.name}</span>
+        return `
+            <tr>
+                <td class="col-name">
+                    <div class="coin-info">
+                        <img src="${fallbackImg}" alt="${coin.name}" class="coin-icon">
+                        <div class="coin-name-group">
+                            <span class="coin-symbol">${coin.symbol.toUpperCase()}</span>
+                            <span class="coin-full-name">${coin.name}</span>
+                        </div>
                     </div>
-                </div>
-            </td>
-            <td class="col-price price">${formatCurrency(coin.current_price)}</td>
-            <td class="col-change ${changeClass}">${changePrefix}${formatPercentage(change)}</td>
-            <td class="col-volume hide-mobile volume">${formatCompactCurrency(coin.total_volume)}</td>
-            <td class="col-marketcap hide-mobile hide-tablet market-cap">${formatCompactCurrency(coin.market_cap)}</td>
+                </td>
+                <td class="col-price price">${formatCurrency(coin.price_usd)}</td>
+                <td class="col-change ${changeClass}">${changePrefix}${formatPercentage(change)}</td>
+                <td class="col-volume hide-mobile volume">${formatCompactCurrency(coin.volume24)}</td>
+                <td class="col-marketcap hide-mobile hide-tablet market-cap">${formatCompactCurrency(coin.market_cap_usd)}</td>
+            </tr>
         `;
-        tableBody.appendChild(tr);
     });
+
+    // Update innerHTML
+    tableBody.innerHTML = htmlRows.join('');
 }
